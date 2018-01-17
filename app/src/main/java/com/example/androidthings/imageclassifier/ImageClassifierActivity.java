@@ -229,6 +229,10 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
                         Classifier.Recognition r = results.get(i);
                         Log.i(TAG, r.getTitle());
                         if ((r.getTitle().equals("mask"))||(r.getTitle().equals("wig"))) {
+                            if (mTimer<0) {
+                                myDevice.stop_alarm();
+                            }
+
                             mTimer =  600000;
                             mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString(mTimer/1000));
                             Log.i(TAG, "Someone came to drink water");

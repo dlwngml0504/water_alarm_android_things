@@ -56,7 +56,11 @@ public class MyDevice {
 //         데모();
 //         예제();
     }
+    public void  stop_alarm() {
+        music.stop();
+//        light.off();
 
+    }
     void 예제() {
         // two arguments
         light.on(ALL, RED);
