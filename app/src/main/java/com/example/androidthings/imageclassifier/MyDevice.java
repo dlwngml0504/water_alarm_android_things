@@ -1,7 +1,6 @@
 package com.example.androidthings.imageclassifier;
 
 import android.util.Log;
-import android.view.Display;
 
 /**
  * Created by juhee on 2018. 1. 16..
@@ -26,8 +25,10 @@ public class MyDevice {
 
     private Led light;
     private MusicPlayer music;
+    private Display display;
 
-    public MyDevice(MusicPlayer music, Led light) {
+    public MyDevice(Display display, MusicPlayer music, Led light) {
+        this.display = display;
         this.music = music;
         this.light = light;
     }
@@ -40,47 +41,23 @@ public class MyDevice {
         }
     }
 
-    /** 여기서부터 시작 */
 
     public void 내코드() {
         // 1. 디스플레이 코딩. 주의: 네 글자 영어 혹은 숫자만 가능
-//        display.show("BLUE");
-
-        // 2. 불 코딩
-//         light.on(1);
-//         light.on(2, CYAN);
-
-        // 3. 음악
-         music.play(C);
-
-//         데모();
-//         예제();
+        display.show("BLUE");
+        데모();
     }
+
     public void  stop_alarm() {
+        display.clear();
         music.stop();
-//        light.off();
-
-    }
-    void 예제() {
-        // two arguments
-        light.on(ALL, RED);
-
-        // 도레미파솔
-        music.play(C);
-        pause(1);
-        music.stop();
-        music.play(D);
-        pause(1);
-        music.stop();
-        music.play(E);
-        pause(1);
-        music.stop();
-        music.play(F);
-        pause(1);
-        music.stop();
-        music.play(G);
-        pause(1);
-        music.stop();
+        light.off(0);
+        light.off(1);
+        light.off(2);
+        light.off(3);
+        light.off(4);
+        light.off(5);
+        light.off(6);
 
     }
 

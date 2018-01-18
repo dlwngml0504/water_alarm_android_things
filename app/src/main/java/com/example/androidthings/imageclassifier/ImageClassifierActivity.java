@@ -27,6 +27,7 @@ import android.os.HandlerThread;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+//import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -56,6 +57,7 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
 
     private Led light;
     private MusicPlayer music;
+    private Display display;
     private MyDevice myDevice;
 
     private HandlerThread mBackgroundThread;
@@ -94,7 +96,8 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
 
         music = new MusicPlayer();
         light = new Led();
-        myDevice = new MyDevice(music, light);
+        display = new Display();
+        myDevice = new MyDevice(display, music, light);
 
         mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString(mTimer/1000));
         mBackgroundThread = new HandlerThread("BackgroundThread");
