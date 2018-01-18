@@ -41,15 +41,18 @@ public class MyDevice {
         }
     }
 
+    public void initdisplay() {
+        display.open();
+        display.show("HIHI");
+    }
 
     public void 내코드() {
-        // 1. 디스플레이 코딩. 주의: 네 글자 영어 혹은 숫자만 가능
-        display.show("BLUE");
+        display.show("COME");
         데모();
     }
 
     public void  stop_alarm() {
-        display.clear();
+        display.show("HIHI");
         music.stop();
         light.off(0);
         light.off(1);
@@ -61,8 +64,10 @@ public class MyDevice {
 
     }
 
-    // DEMO 코드
     void 데모() {
+        music.playAll(0.3, G, E, E, E, F, D, D, D, C, D, E, F, G, G, G, G);
+        music.stop();
+
         light.on(0, RED);
         light.on(1, ORANGE);
         light.on(2, YELLOW);
@@ -128,18 +133,5 @@ public class MyDevice {
 
         light.on(ALL, WHITE);
         pause(1);
-
-        music.playAll(0.5,
-                G, E, E, E, F, D, D, D, C, D, E, F, G, G, G, G,
-                G, E, E, E, F, D, D, D, C, E, G, G, E, E, E, E);
-    }
-
-    void musicAndLight(MusicPlayer.Note note) {
-        int diff = note.value - C.value;
-        light.on(diff, WHITE);
-        music.play(note);
-        pause(1);
-        light.off(diff);
-        music.stop();
     }
 }

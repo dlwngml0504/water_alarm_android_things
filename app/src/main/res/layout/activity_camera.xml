@@ -23,46 +23,29 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="640dip"
+        android:layout_width="320dip"
         android:layout_height="480dip"
         android:layout_alignParentTop="true"
-        android:layout_marginBottom="0dp"/>
+        android:layout_toStartOf="@+id/timeImage" />
 
-    <LinearLayout
-        android:id="@+id/results"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/results"
-        android:background="@color/control_background"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/result1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:text="@string/help_message"
-            tools:text="dog: 0.343535" />
+    <ImageView
+        android:id="@+id/timeImage"
+        android:layout_width="320dip"
+        android:layout_height="250dip"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dip"/>
 
-        <TextView
-            android:id="@+id/result2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            tools:text="chair: 0.23423423" />
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="320dip"
+        android:layout_height="100dip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:text="5 min left"
+        android:textSize="37dp" />
 
-        <TextView
-            android:id="@+id/result3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            tools:text="cat: 0.21423423" />
-
-        <TextView
-            android:id="@+id/result4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            tools:text="last drink time: " />
-    </LinearLayout>
 </RelativeLayout>

@@ -24,28 +24,18 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
-//import android.view.Display;
-import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.androidthings.imageclassifier.classifier.Classifier;
 import com.example.androidthings.imageclassifier.classifier.TensorFlowImageClassifier;
-import com.google.android.things.contrib.driver.button.Button;
-import com.google.android.things.contrib.driver.button.ButtonInputDriver;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManagerService;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ImageClassifierActivity extends Activity implements ImageReader.OnImageAvailableListener {
@@ -64,13 +54,14 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
     private Handler mBackgroundHandler;
 
     private ImageView mImage;
-    private TextView[] mResultViews;
+    private ImageView timeImage;
+    private TextView mResultViews;
 
     private AtomicBoolean mReady = new AtomicBoolean(false);
     private Gpio mReadyLED;
 
     private int mInterval = 10000; // 10 seconds by default, can be changed later
-    private int mTimer =  600000; // 10 minutes by default, can be changed later
+    private int mTimer =  60000; // 10 minutes by default, can be changed later
     private Handler mHandler;
 
     @Override
@@ -80,11 +71,8 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
 
         setContentView(R.layout.activity_camera);
         mImage = (ImageView) findViewById(R.id.imageView);
-        mResultViews = new TextView[4];
-        mResultViews[0] = (TextView) findViewById(R.id.result1);
-        mResultViews[1] = (TextView) findViewById(R.id.result2);
-        mResultViews[2] = (TextView) findViewById(R.id.result3);
-        mResultViews[3] = (TextView) findViewById(R.id.result4);
+        timeImage = (ImageView) findViewById(R.id.timeImage);
+        mResultViews = (TextView) findViewById(R.id.textView);
 
         init();
     }
@@ -98,8 +86,11 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
         light = new Led();
         display = new Display();
         myDevice = new MyDevice(display, music, light);
+        myDevice.initdisplay();
 
-        mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString(mTimer/1000));
+        timeImage.setImageResource(R.drawable.countdown);
+
+        mResultViews.setText(Integer.toString(1+mTimer/60000)+" min left");
         mBackgroundThread = new HandlerThread("BackgroundThread");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
@@ -115,23 +106,21 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
             try {
                 mTimer = mTimer - 10000;
                 if (mTimer<0) {
-                    mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString((mTimer/1000)*(-1)));
+                    mResultViews.setText("Drink water");
                     if (light.open() &&  music.open()) {
+                        timeImage.setImageResource(R.drawable.drink);
                         new Thread() {
                             @Override
                             public void run() {
                                 myDevice.pause(1);
                                 myDevice.내코드();
                                 myDevice.pause(1);
-                                finish();
                             }
                         }.start();
-                    } else {
-                        finish();
                     }
                 }
                 else {
-                    mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString(mTimer/1000));
+                    mResultViews.setText(Integer.toString(1+mTimer/60000)+" min left");
                 }
 
                 if (mReady.get()) {
@@ -141,7 +130,6 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
                 } else {
                     Log.i(TAG, "Sorry, processing hasn't finished. Try again in a few seconds");
                 }
-//                updateStatus(); //this function can change value of mInterval.
             } finally {
                 // 100% guarantee that this always happens, even if
                 // your update method throws an exception
@@ -224,25 +212,25 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
         Log.d(TAG, "Got the following results from Tensorflow: " + results);
         setReady(true);
 
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < mResultViews.length-1; i++) {
+                for (int i = 0; i < 4; i++) {
                     if (results.size() > i) {
                         Classifier.Recognition r = results.get(i);
                         Log.i(TAG, r.getTitle());
                         if ((r.getTitle().equals("mask"))||(r.getTitle().equals("wig"))) {
                             if (mTimer<0) {
                                 myDevice.stop_alarm();
+                                timeImage.setImageResource(R.drawable.countdown);
+
                             }
 
                             mTimer =  600000;
-                            mResultViews[mResultViews.length-1].setText("last drink time: "+ Integer.toString(mTimer/1000));
+                            mResultViews.setText("last drink time: "+ Integer.toString(mTimer/1000));
                             Log.i(TAG, "Someone came to drink water");
                         }
-                        mResultViews[i].setText(r.getTitle() + " : " + r.getConfidence().toString());
-                    } else {
-                        mResultViews[i].setText(null);
                     }
                 }
             }
@@ -254,8 +242,10 @@ public class ImageClassifierActivity extends Activity implements ImageReader.OnI
         super.onDestroy();
         stopRepeatingTask();
 
+        myDevice.stop_alarm();
         light.close();
         music.close();
+        display.close();
 
         try {
             if (mBackgroundThread != null) mBackgroundThread.quit();
